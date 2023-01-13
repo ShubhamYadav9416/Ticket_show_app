@@ -260,6 +260,7 @@ def book_show_venu():
             venu=request.form['venu_name']
             show=request.form['show_name']
             price=request.form['price']
+            show_time=request.form['show_time']
             venu_full = Venu.query.filter_by(venu_name=venu).first()
             show_full = Show.query.filter_by(show_name=show).first()
             record = Show_venu(show=show_full,venu=venu_full, show_price = price)

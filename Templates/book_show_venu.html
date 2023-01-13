@@ -19,7 +19,7 @@
                 </div>
             </div>
             <center>
-            <div class="content">
+            <div >
                 <h2>Add Venu</h2>
                 <form method="POST">
                     <select class="select" name="venu_name" required="True">
@@ -35,6 +35,8 @@
                         {% endfor %}
                     </select><br>
                     <input type="text" name="price" placeholder="price of one ticket" required="True"><br>
+                    <label>Put show time:</label>
+                    <input  class="date_input" type="datetime-local" name="showtime"><br>
                     <input class="submit" type="submit" name="/Go"><br>
                 </form>
             </div>
