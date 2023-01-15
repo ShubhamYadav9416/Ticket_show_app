@@ -10,8 +10,9 @@
     </head>
     <body>
             <div class="side_bar">
+                <a href="{{url_for("admin")}}">
                 <img class="logo" src="{{url_for('static', filename ='image/logo.png')}}">
-                <a class="admin">Admin</a>
+                <a class="admin">Admin</a></a>
                 <br><br>
                 <div class="icons">
                     <a href="{{url_for("venu")}}">Venus</a>
@@ -21,9 +22,60 @@
                 </div>
             </div>
             <center>
-            <div class="content">
-                
-            </div>
+                <div class="content">
+                    {% if display_table == "True" %}
+                        <h1>{{heading}}</h1>
+                        <table>
+                            <tr>
+                                {% for head in heads %}
+                                    <th>{{head}}</th>
+                                {% endfor %}
+                            </tr>
+                            {% for main_content in main_contents %}
+                            <tr>
+                                {% for box_content in box_contents %}
+                                    <td>{{main_content[box_content]}}</td>
+                                {% endfor %}
+                                {% for additional in additional1 %}
+                                    <td><a href="{{main_content[additional]}}">view</a></td>
+                                {% endfor %}
+                                {% if edit_delete == "True" %}
+                                    <td><a href="{{url_for(url1 , id=main_content[id])}}"><i class="bi bi-pencil-square"></i></a>/<a href="{{url_for(url2 , id=main_content[id])}}"><i class="bi bi-trash"></i></a></td>
+                                {% endif %}
+                        </tr>              
+                        {% endfor %}
+                        </table>
+                        {% if input_button == "True" %}
+                            <a href="{{url_for(button_url)}}"><button class="add">{{button_name}}</button></a>
+                        {% endif %}
+                    {% endif %}
+                    {% if take_input == "True" %}
+                        <h2>{{heading}}</h2>
+                        <form method="POST" enctype="multipart/form-data">
+                            {% if special_form=="True" %}
+                                <select class="select" name="venu_name" required="True">
+                                    <option>Select Venu</option>
+                                    {% for venu in venus %}
+                                        <option value="{{venu['venu_name']}}">{{venu['venu_name']}}</option>
+                                    {% endfor %}
+                                </select><br>
+                                <select class="select" name="show_name" required="True">
+                                    <option>Select Show</option>
+                                    {% for show in shows %}
+                                        <option value="{{show['show_name']}}">{{show['show_name']}}</option>
+                                    {% endfor %}
+                                </select><br>
+                                <input type="text" name="price" placeholder="price of one ticket" required="True"><br>
+                                <label>Put show time:</label>
+                                <input  class="date_input" type="datetime-local" name="showtime"><br>
+                            {% endif %}
+                            {% for form_condition in form_conditions %}
+                                    <input type= {{form_condition["type"]}} name = {{form_condition["name"]}} placeholder= {{form_condition["placeholder"]}}  required = {{form_condition["required"]}}><br>
+                            {% endfor %}
+                            <input class="submit" type="submit" name="/Go"><br>
+                        </form>
+                    {% endif %}
+                </div>
             </center>
     </body>
 </html>

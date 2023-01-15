@@ -1,6 +1,7 @@
 from flask import Flask, request, render_template, url_for, redirect, flash, session
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import delete
+from datetime import datetime
 
 app = Flask(__name__,template_folder="Templates")
 
@@ -16,14 +17,18 @@ class Show_venu(db.Model):
     venu_id = db.Column(db.Integer, db.ForeignKey("venu.venu_id"))
     show_id = db.Column(db.Integer, db.ForeignKey("show.show_id"))
     show_price = db.Column(db.Float, nullable = False)
+    show_timing = db.Column(db.DateTime)
+    show_added_timing = db.Column(db.DateTime)
 
     show = db.relationship('Show', back_populates="venus")
     venu = db.relationship('Venu', back_populates="shows")
 
-    def __init__(self, show_price, show_id, venu_id):
+    def __init__(self, show_price, show ,venu, show_timing, show_added_timing): #show_timming, show_added_timming):
         self.show_price = show_price
-        self.show_id =  show_id
-        self.venu_id = venu_id
+        self.show = show
+        self.venu= venu
+        self.show_timing = show_timing
+        self.show_added_timing = show_added_timing
 
 class Show(db.Model):
     __tablename__ ='show'
@@ -33,6 +38,7 @@ class Show(db.Model):
     show_tag1 = db.Column(db.String(10), nullable=False)
     show_tag2 = db.Column(db.String(10), nullable = True)
     show_tag3 = db.Column(db.String(10), nullable = True)
+    show_discription = db.Column(db.String(1000))
     show_image_path = db.Column(db.String, nullable= False)
 
     venus = db.relationship('Show_venu', back_populates='show')
@@ -40,13 +46,14 @@ class Show(db.Model):
     def __repr__(self):
          return f'<Show "{self.name}">'
     
-    def __init__(self,show_name,show_tag1,show_tag2,show_tag3,show_image_path):
+    def __init__(self,show_name,show_tag1,show_tag2,show_tag3,show_discription,show_image_path):
         self.show_name= show_name
         # self.show_rating= show_rating
         self.show_tag1= show_tag1
         self.show_tag2= show_tag2
         self.show_tag3= show_tag3
         self.show_image_path = show_image_path
+        self.show_discription = show_discription
 
 class Venu(db.Model):
     __tablename__ = 'venu'
@@ -61,7 +68,7 @@ class Venu(db.Model):
     def __repr__(self):
          return f'<Venu "{self.name}">'
     
-    def __init__(self,venu_name,capacity,location,place):
+    def __init__(self,venu_name,capacity,place,location):
         self.venu_name= venu_name
         self.capacity = capacity
         self.location = location
@@ -117,7 +124,16 @@ def admin():
 def venu():
         if ('email' in session):
             venus = Venu.query.all()
-            return render_template('admin_display_venu.html', venus=venus)
+            heading = "All Venus"
+            main_contents = venus
+            heads = ["No.", "Venu Name", "Capacity", "Place", "Location", "Action"]
+            box_contents = ["venu_id" , "venu_name" , "capacity" , "location", "place"]
+            url1 = "edit_venu" 
+            url2 = "delete_venu"
+            id = "venu_id"
+            button_url ="add_venu"
+            button = "Add Venu"
+            return render_template('admin.html',display_table = "True", take_input = "False", edit_delete = "True" ,input_button="True", heading=heading, main_contents = main_contents, heads = heads, box_contents = box_contents, button_url = button_url, button_name = button, url1 = url1, url2 = url2, id = id)
         else:
             return ("You are not allowed to access admin page")
         
@@ -126,7 +142,9 @@ def venu():
 def add_venu():
     if ('email' in session):
         if request.method == "GET":
-            return (render_template("add_venu.html"))
+            heading = "Add Venus"
+            form_conditions = [{"type": "text", "name": "venu_name", "placeholder" : "venu", "required": "True"}, {"type": "number", "name": "capacity", "placeholder" : "capacity", "required": "True"}, {"type": "text", "name": "place", "placeholder" : "place", "required": "True"}, {"type": "text", "name": "location", "placeholder" : "location", "required": "True"}]
+            return render_template("admin.html", take_input="True",special_form="False", display_table = "False", heading=heading, form_conditions=form_conditions)
         if request.method == "POST":
             venu_name = request.form['venu_name']
             capacity = request.form['capacity']
@@ -180,7 +198,17 @@ def delete_venu(id):
 def show():
     if ('email' in session):
         shows = Show.query.all()
-        return render_template('admin_display_show.html', shows=shows)
+        heading = "All Show"
+        main_contents = shows
+        heads = ["No.", "Show Name", "Rating", "Tags", "Discription", "Poster", "Action"]
+        box_contents = ["show_id" , "show_name" , "show_rating" , "show_tag1", "show_discription"]
+        additional1 = ["show_image_path"]
+        url1 = "edit_show" 
+        url2 = "delete_show"
+        id = "show_id"
+        button_url ="add_show"
+        button = "Add Show"
+        return render_template('admin.html',display_table = "True", take_input = "False", edit_delete = "True" ,input_button="True",heading=heading, main_contents = main_contents, heads = heads, box_contents = box_contents, additional1 = additional1, button_url = button_url, button_name = button, url1 = url1, url2 = url2, id = id)
     else:
         return ("You are not allowed to access admin page")
 
@@ -189,16 +217,19 @@ def show():
 def add_show():
     if ('email' in session):
         if request.method == "GET":
-            return (render_template("add_show.html"))
+            heading = "Add Show"
+            form_conditions=[{"type":"text" ,"name":"show_name", "placeholder":"show" ,"required":"True"}, {"type":"text", "name":"show_tag1", "placeholder":"tag (required)"," required":"True"}, {"type":"text", "name":"show_tag2", "placeholder":"tag (not required)", "required":"False"} ,{"type":"text", "name":"show_tag3", "placeholder":"tag (not required)" , "required":"False"}, {"type":"text" ,"name":"show_discription", "placeholder":"About Show", "required":"False"},{"type":"file" ,"name":"file" ,"placeholder":"upload poster",  "required":"True"}]
+            return (render_template("admin.html", take_input="True",special_form="False", display_table = "False", heading=heading, form_conditions=form_conditions))
         if request.method == "POST":
             show_name = request.form['show_name']
             show_tag1 = request.form['show_tag1']
             show_tag2 = request.form['show_tag2']
             show_tag3 = request.form['show_tag3']
+            show_discription = request.form['show_discription']
             f=request.files['file']
             f.save('static/image/poster'+f.filename)
             show_image_path = str('static/image/poster'+f.filename)
-            record=Show(show_name ,show_tag1, show_tag2, show_tag3, show_image_path )
+            record=Show(show_name ,show_tag1, show_tag2, show_tag3, show_discription, show_image_path )
             db.session.add(record)
             db.session.commit()
             return redirect('/show_admin')
@@ -244,8 +275,14 @@ def delete_show(id):
 @app.route('/show_venu_admin', methods=["GET","POST"])
 def show_venu():
     if ('email' in session):
-        show_venus = Show_venu.query.join(Show,  Venu).filter(Show_venu.show_id == Show.show_id).filter(Show_venu.venu_id == Venu.venu_id).add_columns(Show_venu.show_venu_id,Venu.venu_name, Show.show_name, Show_venu.show_price ).all()
-        return render_template('admin_display_show_venu.html',show_venus=show_venus)
+        show_venus = Show_venu.query.join(Show,  Venu).filter(Show_venu.show_id == Show.show_id).filter(Show_venu.venu_id == Venu.venu_id).add_columns(Show_venu.show_venu_id,Venu.venu_name, Show.show_name, Show_venu.show_price, Show_venu.show_timing ,Show_venu.show_added_timing).all()
+        heading = "All Show"
+        main_contents = show_venus
+        heads = ["Show _ Venu Id", "Show Name", "Venu Name", "Price Of Ticket", "Show Timing", "Show Added Timing"]
+        box_contents = ["show_venu_id" , "show_name" , "venu_name" , "show_price", "show_timing", "show_added_timing"]
+        button = "Book Show Venu"
+        button_url = "book_show_venu"
+        return render_template('admin.html' ,display_table = "True", take_input = "False", edit_delete = "False" ,input_button="True", heading=heading, main_contents = main_contents, heads = heads, box_contents = box_contents, button_name = button, button_url = button_url)
     else:
         return ("You are not allowed to access admin page")
 
@@ -255,15 +292,18 @@ def book_show_venu():
         if request.method == "GET":
             venu=Venu.query.all()
             show=Show.query.all()
-            return render_template("book_show_venu.html", venus = venu, shows=show)
+            heading = "Book Show Venu"
+            return render_template("admin.html", take_input="True",special_form="True", display_table = "False", heading=heading, venus = venu, shows=show)
         if request.method == "POST":
             venu=request.form['venu_name']
             show=request.form['show_name']
             price=request.form['price']
-            show_time=request.form['show_time']
+            show_time=request.form['showtime']
+            show_time = datetime.strptime(show_time,"%Y-%m-%dT%H:%M")
+            show_added_timing = datetime.now()
             venu_full = Venu.query.filter_by(venu_name=venu).first()
             show_full = Show.query.filter_by(show_name=show).first()
-            record = Show_venu(show=show_full,venu=venu_full, show_price = price)
+            record = Show_venu(show = show_full,venu = venu_full, show_price = price ,show_timing = show_time, show_added_timing= show_added_timing)
             db.session.add(record)
             db.session.commit()
             return redirect('/show_venu_admin')
