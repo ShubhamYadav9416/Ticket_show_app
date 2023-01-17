@@ -3,6 +3,13 @@ from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import delete
 from datetime import datetime
 
+from flask_login import UserMixin, login_user, LoginManager, login_required, logout_user, current_user
+# from flask_wtf import FlaskForm
+# from wtforms import StringField, PasswordField, SubmitField
+# from wtforms.validators import InputRequired, Length, ValidationError
+from flask_bcrypt import Bcrypt
+
+
 app = Flask(__name__,template_folder="Templates")
 
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///mydatabom.sqlite3" 
@@ -10,6 +17,11 @@ db = SQLAlchemy()
 db.init_app(app)
 app.app_context().push()
 app.secret_key="123456789"
+
+login_manager = LoginManager()
+login_manager.init_app(app)
+login_manager.login_view = 'login'
+
 
 class Show_venu(db.Model):
     __tablename__ = 'show_venu'
@@ -81,8 +93,9 @@ class Venu(db.Model):
 class User(db.Model):
     __tablename__ = 'user'
     user_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
-    email = db.Column(db.String, unique=True ,nullable = False)
-    password = db.Column(db.String, nullable = False)
+    email = db.Column(db.String(20), unique=True ,nullable = False)
+    password = db.Column(db.String(80), nullable = False)
+
 
 
 class Ticket_booked(db.Model):
@@ -94,20 +107,32 @@ class Ticket_booked(db.Model):
     cost_of_booked_tickets = db.Column(db.Float, nullable = False)
 
 
+@login_manager.user_loader
+def load_user(user):
+    return User.get(user)
  
 @app.route("/login", methods=["GET","POST"])
 def login():
     if request.method == "GET":
         return render_template("login.html")
     if request.method == "POST":
-        username = request.form["username"]
+        email = request.form["email"]
         password = request.form["password"]
-        if (username == "admin_user@gmail.com" and password=="1234"):
-            session['email'] = username
+        user = User.query.filter_by(email=email).first()
+        if (email == "admin_user@gmail.com" and password=="1234"):
+            session['email'] = email
             return redirect('/admin')
-        else:
-            return ("invalid credentials")
-
+        if user:
+            if Bcrypt.check_password_hash(user.password, password):
+                login_user(user)
+                return redirect('/')
+            
+@app.route("/", methods=["GET","POST"])
+@login_required
+def user_interface():
+    if request.method== "GET":
+        return render_template("home.html")
+            
 @app.route("/admin_logout")
 def admin_logout():
     session.pop('email',None)

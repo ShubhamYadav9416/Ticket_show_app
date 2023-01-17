@@ -1,50 +1,149 @@
 header{
-    background-color: rgb(43, 40, 52);
-    width: auto;
-    height: 45px;
-    padding-left: 80px;
-    padding-right: 80px;
-    padding-top: 8px;
+    width: 100%;
+    height: 60px;
+    background-color: rgb(51, 53, 69);
+    padding: 0px;
+    position: fixed;
+    margin-top: -83px;
+}
+
+.header_content{
+    max-width: 1240px;
+    width: 70%;
+    margin: 0px auto 0px auto;
+    color: whitesmoke;
+    text-align: right;
 }
 
 .logo{
-    width: 85px;
-    height: auto;
+    width: auto;
+    height: 20px;
+    margin-top: 0px;
+    /* margin-left: 80px; */
 }
 
-header input{
-    width: 250px;
+
+.search{
+    width: 300px;
     height: 25px;
-    font-size: 10px;
     margin-left: 10px;
-    border-radius: 0.3em;
-}
-
-header button{
-    font-weight: 800;
-    font-size: 11px;
-    color: white;
-    background-color: red;
-    border-radius: 0.3em;
-    box-shadow: none;
+    margin-top: 14px;
+    border-radius: 0.2em;
     border-width: 0;
-    margin-left: 315px;
+    font-size: 13px;
 }
 
-main{
-    margin-left: 80px;
+.header_content button{
+    font-size: 10px;
+    padding-top: 5px;
+    padding-bottom: 5px;
+    background-color: rgb(234, 76, 76);
+    color: white;
+    border-width: 0;
+    margin-left: 5px;
+    margin-top: 14px;
+    border-radius: 0.2em;
+    text-align: right;
+}
+
+.header_content .left_align{
+    position: fixed;
+}
+
+.header .right_align{
     margin-right: 80px;
-    margin-top: 30px;
+}
+
+.right_align p{
+    position: fixed;
+    text-align: right;
+    margin-left: 680px;
+    margin-top: 15px;
+    font-size: 14px;
 }
 
 
-#block img{
+.sidebar {
+    height: 100%;
     width: 200px;
-    height: 300px;
+    margin-top: 100px;
+    margin-left: 15px;
+    position: fixed;
+    overflow-x: hidden;
 }
 
-#tags{
-    margin-top: -20px;
-    color: rgb(136, 156, 156);
-    font-size: small;
+dl{
+    font-size: 14px;
+}
+dt{
+    margin-bottom: 10px;
+    font-weight: 300;
+}
+dd{
+    margin-left: 20px;
+    margin-top: -13px;
+    font-weight: 100;
+}
+
+.main{
+    margin-left: 200px;
+    margin-top: 80px;
+    margin-right: 20px;
+    overflow: hidden;
+    max-width: 2050px;
+}
+
+
+.main_poster{
+    background-color: black;
+    margin-left: -10px;
+    height: 275px;
+    width: 180px;
+    border-radius: 0.3em;
+}
+
+.poster{
+    height: 250px;
+    width: 180px;
+    border-top-left-radius: 0.3em;
+    border-top-right-radius: 0.3em;
+}
+
+.movie_page_link{
+    text-decoration: None;
+    width: 180px;
+}
+
+.rating{
+    color:white;
+    font-size: 12px;
+    margin-top: 4px;
+    text-align: left;
+    margin-left: 5px;
+}
+
+.movie_name{
+    color: black;
+    text-align: left;
+    font-size: 15px;
+    margin-left: -10px;
+    margin-top: 6px;
+}
+
+.tags{
+    color: rgb(122, 124, 124);
+    text-align: left;
+    font-size: 15px;
+    margin-left: -10px;
+    margin-top: -15px;
+}
+
+.poster_link_activate{
+    width: 180px;
+    height: 310px;
+    float: left;
+    margin-left: 15px;
+    margin-right: 15px;
+    margin-bottom: 50px;
+    margin-top: 10px;
 }

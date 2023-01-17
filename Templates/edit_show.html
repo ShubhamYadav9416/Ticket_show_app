@@ -19,17 +19,17 @@
                 </div>
             </div>
             <center>
-            <div class="content">
-                <h2>Add Venu</h2>
-                <form method="POST" action="{{url_for("update_show", id=content["show_id"])}}">
-                    <input type="text" name="show_name" placeholder="show" required="True" value="{{content["show_name"]}}" ><br>
-                    <input type="text" name="show_tag1" placeholder="tag" required="True" value="{{content["show_tag1"]}}"><br>
-                    <input type="text" name="show_tag2" placeholder="tag" value="{{content["show_tag2"]}}"><br>
-                    <input type="text" name="show_tag3" placeholder="tag" value="{{content["show_tag3"]}}"><br>
-                    <!-- <input type="file" name="show_image_name" placeholder="upload poster" required="True"><br> -->
-                    <input class="submit" type="submit" value = "Update"><br>
-                </form>
-            </div>
+                <div class="content">
+                    <h2>Add Venu</h2>
+                    <form method="POST" action="{{url_for("update_show", id=content["show_id"])}}">
+                        <input type="text" name="show_name" placeholder="show" required="True" value="{{content["show_name"]}}" ><br>
+                        <input type="text" name="show_tag1" placeholder="tag" required="True" value="{{content["show_tag1"]}}"><br>
+                        <input type="text" name="show_tag2" placeholder="tag" value="{{content["show_tag2"]}}"><br>
+                        <input type="text" name="show_tag3" placeholder="tag" value="{{content["show_tag3"]}}"><br>
+                        <!-- <input type="file" name="show_image_name" placeholder="upload poster" required="True"><br> -->
+                        <input class="submit" type="submit" value = "Update"><br>
+                    </form>
+                </div>
             </center>
     </body>
 </html>

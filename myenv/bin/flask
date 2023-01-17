@@ -1,4 +1,4 @@
-#!/home/shubham/MAD_1_Final_Project/myenv/bin/python3
+#!/home/shubham/MAD_1_Final_Project/Ticket_show_app/myenv/bin/python3
 # -*- coding: utf-8 -*-
 import re
 import sys
