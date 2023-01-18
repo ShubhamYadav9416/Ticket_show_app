@@ -48,23 +48,19 @@ class Show(db.Model):
     show_id = db.Column(db.Integer, autoincrement = True, primary_key = True)
     show_name = db.Column(db.String(25), nullable= False)
     show_rating = db.Column(db.Float, nullable=True)
-    show_tag1 = db.Column(db.String(10), nullable=False)
-    show_tag2 = db.Column(db.String(10), nullable = True)
-    show_tag3 = db.Column(db.String(10), nullable = True)
+    no_of_rating = db.Column(db.Integer)
+    show_tag = db.Column(db.String(10), nullable=False)
     show_discription = db.Column(db.String(1000))
     show_image_path = db.Column(db.String, nullable= False)
 
     venus = db.relationship('Show_venu', back_populates='show')
 
-    def __repr__(self):
-         return f'<Show "{self.name}">'
+
     
-    def __init__(self,show_name,show_tag1,show_tag2,show_tag3,show_discription,show_image_path):
+    def __init__(self,show_name,show_tag,show_discription,show_image_path):
         self.show_name= show_name
         # self.show_rating= show_rating
-        self.show_tag1= show_tag1
-        self.show_tag2= show_tag2
-        self.show_tag3= show_tag3
+        self.show_tag = show_tag
         self.show_image_path = show_image_path
         self.show_discription = show_discription
 
@@ -78,8 +74,6 @@ class Venu(db.Model):
     
     shows = db.relationship('Show_venu' , back_populates="venu")
 
-    def __repr__(self):
-         return f'<Venu "{self.name}">'
     
     def __init__(self,venu_name,capacity,place,location):
         self.venu_name= venu_name
@@ -185,7 +179,16 @@ def home():
     if request.method== "GET":
         email = current_user.email
         user = email.split("@")[0]
-        return render_template("home.html",user=user)
+        shows = Show.query.all()
+        shows_places = Show_venu.query.join(Show,  Venu).filter(Show_venu.show_id == Show.show_id).filter(Show_venu.venu_id == Venu.venu_id).add_columns(Venu.place).all()
+        print(shows)
+        return render_template("home.html",user=user,shows = shows, shows_places = shows_places)
+    
+@app.route('/ticket_booking')
+@login_required
+def ticket_booking():
+    return ("page not available")
+
 
 @app.route("/logout",methods=["GET","POST"])
 @login_required
@@ -286,7 +289,7 @@ def show():
         heading = "All Show"
         main_contents = shows
         heads = ["No.", "Show Name", "Rating", "Tags", "Discription", "Poster", "Action"]
-        box_contents = ["show_id" , "show_name" , "show_rating" , "show_tag1", "show_discription"]
+        box_contents = ["show_id" , "show_name" , "show_rating" , "show_tag", "show_discription"]
         additional1 = ["show_image_path"]
         url1 = "edit_show" 
         url2 = "delete_show"
@@ -303,18 +306,16 @@ def add_show():
     if ('email' in session):
         if request.method == "GET":
             heading = "Add Show"
-            form_conditions=[{"type":"text" ,"name":"show_name", "placeholder":"show" ,"required":"True"}, {"type":"text", "name":"show_tag1", "placeholder":"tag (required)"," required":"True"}, {"type":"text", "name":"show_tag2", "placeholder":"tag (not required)", "required":"False"} ,{"type":"text", "name":"show_tag3", "placeholder":"tag (not required)" , "required":"False"}, {"type":"text" ,"name":"show_discription", "placeholder":"About Show", "required":"False"},{"type":"file" ,"name":"file" ,"placeholder":"upload poster",  "required":"True"}]
+            form_conditions=[{"type":"text" ,"name":"show_name", "placeholder":"show" ,"required":"True"}, {"type":"text", "name":"show_tag", "placeholder":"tag(required)", "required":"True"} , {"type":"text" ,"name":"show_discription", "placeholder":"About Show", "required":"False"},{"type":"file" ,"name":"file" ,"placeholder":"upload poster",  "required":"True"}]
             return (render_template("admin.html", take_input="True",special_form="False", display_table = "False", heading=heading, form_conditions=form_conditions))
         if request.method == "POST":
             show_name = request.form['show_name']
-            show_tag1 = request.form['show_tag1']
-            show_tag2 = request.form['show_tag2']
-            show_tag3 = request.form['show_tag3']
+            show_tag = request.form['show_tag']
             show_discription = request.form['show_discription']
             f=request.files['file']
             f.save('static/image/poster'+f.filename)
             show_image_path = str('static/image/poster'+f.filename)
-            record=Show(show_name ,show_tag1, show_tag2, show_tag3, show_discription, show_image_path )
+            record=Show(show_name ,show_tag, show_discription, show_image_path )
             db.session.add(record)
             db.session.commit()
             return redirect('/show_admin')

@@ -27,104 +27,29 @@
             <div class="sidebar">
                 <dl>
                     <dt>Filter by Location</dt>
-                    <dd>-Delhi NCR</dd>
-                    <dd>-Lucknow</dd>
+                    <!-- {{shows_places[1][1]}} -->
+                    {% for show_place in shows_places %}
+                        <dd>-{{show_place[1]}}</dd>
+                    {% endfor %}
                 </ul>
             </div>
             <div class="main">
-            <h5>Recently Added</h5>
-                        <div class="poster_link_activate">
-                            <a href="" class="movie_page_link"> 
-                               <div class="main_poster">
-                                    <img src="ved.jpeg" class="poster">
-                                    <p class="rating">
-                                    <i class="bi bi-star-fill" style="color: rgb(226, 107, 107);"></i>
-                                    9.2/10  14K Vote
-                                    </p>
-                                </div>
-                                <p class="movie_name">Ved(hindi)</p>
-                                <p class="tags">action/ </p>
-                            </a>
-                        </div>
-                        <div class="poster_link_activate">
-                            <a href="" class="movie_page_link"> 
-                               <div class="main_poster">
-                                    <img src="ved.jpeg" class="poster">
-                                    <p class="rating">
-                                    <i class="bi bi-star-fill" style="color: rgb(226, 107, 107);"></i>
-                                    9.2/10  14K Vote
-                                    </p>
-                                </div>
-                                <p class="movie_name">Ved(hindi)</p>
-                                <p class="tags">action/ </p>
-                            </a>
-                        </div>
-                        <div class="poster_link_activate">
-                            <a href="" class="movie_page_link"> 
-                               <div class="main_poster">
-                                    <img src="ved.jpeg" class="poster">
-                                    <p class="rating">
-                                    <i class="bi bi-star-fill" style="color: rgb(226, 107, 107);"></i>
-                                    9.2/10  14K Vote
-                                    </p>
-                                </div>
-                                <p class="movie_name">Ved(hindi)</p>
-                                <p class="tags">action/ </p>
-                            </a>
-                        </div>
-                        <div class="poster_link_activate">
-                            <a href="" class="movie_page_link"> 
-                               <div class="main_poster">
-                                    <img src="ved.jpeg" class="poster">
-                                    <p class="rating">
-                                    <i class="bi bi-star-fill" style="color: rgb(226, 107, 107);"></i>
-                                    9.2/10  14K Vote
-                                    </p>
-                                </div>
-                                <p class="movie_name">Ved(hindi)</p>
-                                <p class="tags">action/ </p>
-                            </a>
-                        </div>
-                        <div class="poster_link_activate">
-                            <a href="" class="movie_page_link"> 
-                               <div class="main_poster">
-                                    <img src="ved.jpeg" class="poster">
-                                    <p class="rating">
-                                    <i class="bi bi-star-fill" style="color: rgb(226, 107, 107);"></i>
-                                    9.2/10  14K Vote
-                                    </p>
-                                </div>
-                                <p class="movie_name">Ved(hindi)</p>
-                                <p class="tags">action/ </p>
-                            </a>
-                        </div>
-                        <div class="poster_link_activate">
-                            <a href="" class="movie_page_link"> 
-                               <div class="main_poster">
-                                    <img src="ved.jpeg" class="poster">
-                                    <p class="rating">
-                                    <i class="bi bi-star-fill" style="color: rgb(226, 107, 107);"></i>
-                                    9.2/10  14K Vote
-                                    </p>
-                                </div>
-                                <p class="movie_name">Ved(hindi)</p>
-                                <p class="tags">action/ </p>
-                            </a>
-                        </div>
-                        <div class="poster_link_activate">
-                            <a href="" class="movie_page_link"> 
-                               <div class="main_poster">
-                                    <img src="ved.jpeg" class="poster">
-                                    <p class="rating">
-                                    <i class="bi bi-star-fill" style="color: rgb(226, 107, 107);"></i>
-                                    9.2/10  14K Vote
-                                    </p>
-                                </div>
-                                <p class="movie_name">Ved(hindi)</p>
-                                <p class="tags">action/ </p>
-                            </a>
-                        </div>
-                </div>
+                <h5>Recently Added</h5>
+                {% for show in shows %}
+                    <div class="poster_link_activate">
+                        <a href="{{url_for("ticket_booking")}}" class="movie_page_link"> 
+                           <div class="main_poster">
+                                <img src="{{show["show_image_path"]}}" class="poster">
+                                <p class="rating">
+                                <i class="bi bi-star-fill" style="color: rgb(226, 107, 107);"></i>
+                                {{show["show_rating"]}}
+                                </p>
+                            </div>
+                            <p class="movie_name">{{show["show_name"]}}</p>
+                            <p class="tags">{{show["show_tag"]}}</p>
+                        </a>
+                    </div>
+                {% endfor %}
             </div>
         </main>
     </body>
