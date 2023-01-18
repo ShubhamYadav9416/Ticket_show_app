@@ -17,6 +17,7 @@ db = SQLAlchemy()
 db.init_app(app)
 app.app_context().push()
 app.secret_key="123456789"
+bcrypt = Bcrypt(app)
 
 login_manager = LoginManager()
 login_manager.init_app(app)
@@ -90,49 +91,108 @@ class Venu(db.Model):
 
 
 
-class User(db.Model):
+class User(db.Model, UserMixin):
     __tablename__ = 'user'
-    user_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
+    id = db.Column(db.Integer, autoincrement=True, primary_key=True)
     email = db.Column(db.String(20), unique=True ,nullable = False)
     password = db.Column(db.String(80), nullable = False)
 
+    def __init__(self,email,password):
+        self.email=email
+        self.password = password
+    
+    def  get_id(self):
+        return (self.id)
 
 
 class Ticket_booked(db.Model):
     __tablename__ = 'ticket_booked'
     booking_id = db.Column(db.Integer, primary_key = True)
-    user_id = db.Column(db.Integer, db.ForeignKey("user.user_id"), primary_key= True,nullable = False)
+    user_id = db.Column(db.Integer, db.ForeignKey("user.id"), primary_key= True,nullable = False)
     show_venu_id = db.Column(db.Integer, db.ForeignKey("show_venu.show_venu_id"), primary_key= True, nullable= False)
     number_of_ticket_booked = db.Column(db.Integer, nullable = False)
     cost_of_booked_tickets = db.Column(db.Float, nullable = False)
+    time_of_ticket_booked = db.Column(db.DateTime)
 
 
 @login_manager.user_loader
-def load_user(user):
-    return User.get(user)
+def load_user(id):
+    return User.query.get(id)
  
 @app.route("/login", methods=["GET","POST"])
 def login():
     if request.method == "GET":
-        return render_template("login.html")
+        page = "login"
+        submit_name="Sign In"
+        return render_template("login.html",page=page, submit_name = submit_name)
     if request.method == "POST":
         email = request.form["email"]
         password = request.form["password"]
         user = User.query.filter_by(email=email).first()
+        if user:
+            if bcrypt.check_password_hash(user.password, password):
+                login_user(user)
+                return redirect('/')
+        else:
+            flash("You are not registerd")
+            return redirect("/login")
+
+@app.route("/admin_login", methods=["GET","POST"])
+def admin_login():
+    if request.method == "GET":
+        submit_name="Sign In"
+        return render_template("login.html",admin="True" , submit_name=submit_name)
+    if request.method == "POST":
+        email = request.form["email"]
+        password = request.form["password"]
         if (email == "admin_user@gmail.com" and password=="1234"):
             session['email'] = email
             return redirect('/admin')
-        if user:
-            if Bcrypt.check_password_hash(user.password, password):
-                login_user(user)
-                return redirect('/')
-            
+
+@app.route("/register", methods=["GET","POST"])
+def register():
+    if request.method == "GET":
+        page = "register"
+        submit_name="Register"
+        return render_template("login.html",page=page, submit_name=submit_name)
+    if request.method == "POST":
+        email = request.form["email"]
+        existing_email = User.query.filter_by(email = email).first()
+        if existing_email:
+            flash("email already register")
+            return redirect("/login")
+        else:
+            password = request.form["password"]
+            hashed_password = bcrypt.generate_password_hash(password)
+            new_user= User(email=email,password = hashed_password)
+            db.session.add(new_user)
+            db.session.commit()
+            flash("You are now registered, Please Login.")
+            return redirect("/login")
+
+
+
+@app.route("/forget_password",methods=["GET","POST"])
+def forget_password():
+    if request.method == "GET":
+        page = "forget_password"
+        submit_name="Submit"
+        return render_template("login.html",page=page, submit_name=submit_name)
+
 @app.route("/", methods=["GET","POST"])
 @login_required
-def user_interface():
+def home():
     if request.method== "GET":
-        return render_template("home.html")
-            
+        email = current_user.email
+        user = email.split("@")[0]
+        return render_template("home.html",user=user)
+
+@app.route("/logout",methods=["GET","POST"])
+@login_required
+def logout():
+    logout_user()
+    return redirect("/login")
+
 @app.route("/admin_logout")
 def admin_logout():
     session.pop('email',None)
