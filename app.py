@@ -180,15 +180,42 @@ def home():
         email = current_user.email
         user = email.split("@")[0]
         shows = Show.query.all()
-        shows_places = Show_venu.query.join(Show,  Venu).filter(Show_venu.show_id == Show.show_id).filter(Show_venu.venu_id == Venu.venu_id).add_columns(Venu.place).all()
-        print(shows)
-        return render_template("home.html",user=user,shows = shows, shows_places = shows_places)
+        shows_place_locations = Show_venu.query.join(Show,  Venu).filter(Show_venu.show_id == Show.show_id).filter(Show_venu.venu_id == Venu.venu_id).add_columns(Venu.place).all()
+        shows_place_tags = Show_venu.query.join(Show,  Venu).filter(Show_venu.show_id == Show.show_id).filter(Show_venu.venu_id == Venu.venu_id).add_columns(Show.show_tag).all()
+        return render_template("home.html",filter_by_location = "True",filter_by_tag="True",user=user,shows = shows,shows_place_tags=shows_place_tags ,shows_place_locations = shows_place_locations, heading1= "Recently Added")
     
-@app.route('/ticket_booking')
+@app.route('/ticket_booking/<int:id>')
 @login_required
-def ticket_booking():
-    return ("page not available")
+def ticket_booking(id):
+    show=Show.query.filter_by(show_id = id).first()
+    email = current_user.email
+    user = email.split("@")[0]
+    return render_template("show_page.html",show = show,user=user)
 
+@app.route("/filter_by_location/<place>")
+@login_required
+def filter_by_location(place):
+    show_ids = Show_venu.query.join(Show,  Venu).filter(Show_venu.show_id == Show.show_id).filter(Show_venu.venu_id == Venu.venu_id).filter(Venu.place == place).add_columns(Show_venu.show_id).all()
+    shows=[]
+    for show_id in show_ids:
+        shows.append(Show.query.filter_by(show_id=show_id[1]).first())
+    heading1= str("Shows in ") + place
+    return render_template("home.html", filter_by_location = "False",filter_by_tag = "False", shows=shows,heading1=heading1)
+
+@app.route("/filter_by_tag/<tag>")
+@login_required
+def filter_by_tag(tag):
+    show_ids = Show_venu.query.join(Show,  Venu).filter(Show_venu.show_id == Show.show_id).filter(Show_venu.venu_id == Venu.venu_id).filter(Show.show_tag == tag).add_columns(Show_venu.show_id).all()
+    shows=[]
+    for show_id in show_ids:
+        shows.append(Show.query.filter_by(show_id=show_id[1]).first())
+    heading1 = tag + str(" Genere Shows")
+    return render_template("home.html", filter_by_location = "False", filter_by_tag="False",shows=shows, heading1 = heading1)
+
+@app.route("/book_ticket")
+@login_required
+def book_ticket():
+    return ("hello")
 
 @app.route("/logout",methods=["GET","POST"])
 @login_required

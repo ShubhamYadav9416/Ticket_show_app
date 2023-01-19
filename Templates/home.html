@@ -18,7 +18,7 @@
                     <a href="#"><input class="search" placeholder=" &#xf002  Search for Movies,Events.. " style="font-family: FontAwesome;"></a>
                 </div>
                 <div class="right_align">
-                    <p class="user" > Welcome {{user}}
+                    <p class="user" ><a href="#"><i class="bi bi-person-circle">{{user}}</i></a>
                     <a href="{{url_for("logout")}}"><button>Logout</button></a></p>
                 </div>
             </div>
@@ -26,18 +26,25 @@
         <main>
             <div class="sidebar">
                 <dl>
-                    <dt>Filter by Location</dt>
-                    <!-- {{shows_places[1][1]}} -->
-                    {% for show_place in shows_places %}
-                        <dd>-{{show_place[1]}}</dd>
-                    {% endfor %}
-                </ul>
+                    {% if filter_by_location == "True" %}
+                        <dt>Filter by Location</dt>
+                        {% for show_place_location in shows_place_locations %}
+                            <a href="{{url_for("filter_by_location",place= show_place_location[1])}}" class="filter_by_location"><dd>-{{show_place_location[1]}}</dd></a>
+                        {% endfor %}
+                    {% endif %}
+                    {% if filter_by_tag == "True" %}
+                        <dt>Filter by Genere</dt>
+                        {% for show_place_tag in shows_place_tags %}
+                            <a href="{{url_for("filter_by_tag",tag= show_place_tag[1])}}" class="filter_by_location"><dd>-{{show_place_tag[1]}}</dd></a>
+                        {% endfor %}
+                    {% endif %}
+                </dl>
             </div>
             <div class="main">
-                <h5>Recently Added</h5>
+                <h5>{{heading1}}</h5>
                 {% for show in shows %}
                     <div class="poster_link_activate">
-                        <a href="{{url_for("ticket_booking")}}" class="movie_page_link"> 
+                        <a href="{{url_for("ticket_booking",id=show["show_id"])}}" class="movie_page_link"> 
                            <div class="main_poster">
                                 <img src="{{show["show_image_path"]}}" class="poster">
                                 <p class="rating">
