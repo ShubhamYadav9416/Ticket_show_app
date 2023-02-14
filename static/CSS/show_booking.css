@@ -184,3 +184,11 @@ select{
     background-color: red;
     color: white;
 }
+
+.comming_soon{
+    color: Red;
+    font-weight: bolder;
+    font-size: 25px;
+    margin-top: 12px;
+    font-family:cursive;
+}

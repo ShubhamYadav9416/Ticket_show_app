@@ -1,4 +1,5 @@
 from .database import db
+from flask_login import UserMixin
 
 class Show_venu(db.Model):
     __tablename__ = 'show_venu'
@@ -24,22 +25,24 @@ class Show(db.Model):
     show_id = db.Column(db.Integer, autoincrement = True, primary_key = True)
     show_name = db.Column(db.String(25), nullable= False)
     show_rating = db.Column(db.Float, nullable=True)
-    show_tag1 = db.Column(db.String(10), nullable=False)
-    show_tag2 = db.Column(db.String(10), nullable = True)
-    show_tag3 = db.Column(db.String(10), nullable = True)
+    no_of_rating = db.Column(db.Integer)
+    show_tag = db.Column(db.String(10), nullable=False)
+    show_lang = db.Column(db.String(10),nullable = False)
+    show_duration = db.Column(db.String(10),nullable=False)
+    show_discription = db.Column(db.String(1000))
     show_image_path = db.Column(db.String, nullable= False)
 
     venus = db.relationship('Show_venu', back_populates='show')
 
-    def __repr__(self):
-         return f'<Show "{self.name}">'
+
     
-    def __init__(self,show_name,show_tag1,show_tag2,show_tag3,show_image_path):
+    def __init__(self,show_name,show_tag,show_discription,show_lang,show_duration,show_image_path):
         self.show_name= show_name
         # self.show_rating= show_rating
-        self.show_tag1= show_tag1
-        self.show_tag2= show_tag2
-        self.show_tag3= show_tag3
+        self.show_tag = show_tag
+        self.show_discription = show_discription
+        self.show_lang = show_lang
+        self.show_duration = show_duration
         self.show_image_path = show_image_path
 
 class Venu(db.Model):
@@ -52,10 +55,8 @@ class Venu(db.Model):
     
     shows = db.relationship('Show_venu' , back_populates="venu")
 
-    def __repr__(self):
-         return f'<Venu "{self.name}">'
     
-    def __init__(self,venu_name,capacity,location,place):
+    def __init__(self,venu_name,capacity,place,location):
         self.venu_name= venu_name
         self.capacity = capacity
         self.location = location
@@ -65,19 +66,26 @@ class Venu(db.Model):
 
 
 
-class User(db.Model):
+class User(db.Model, UserMixin):
     __tablename__ = 'user'
-    user_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
-    email = db.Column(db.String, unique=True ,nullable = False)
-    password = db.Column(db.String, nullable = False)
+    id = db.Column(db.Integer, autoincrement=True, primary_key=True)
+    email = db.Column(db.String(20), unique=True ,nullable = False)
+    password = db.Column(db.String(80), nullable = False)
+
+    def __init__(self,email,password):
+        self.email=email
+        self.password = password
+    
+    def  get_id(self):
+        return (self.id)
 
 
 class Ticket_booked(db.Model):
     __tablename__ = 'ticket_booked'
     booking_id = db.Column(db.Integer, primary_key = True)
-    user_id = db.Column(db.Integer, db.ForeignKey("user.user_id"), primary_key= True,nullable = False)
+    user_id = db.Column(db.Integer, db.ForeignKey("user.id"), primary_key= True,nullable = False)
     show_venu_id = db.Column(db.Integer, db.ForeignKey("show_venu.show_venu_id"), primary_key= True, nullable= False)
     number_of_ticket_booked = db.Column(db.Integer, nullable = False)
     cost_of_booked_tickets = db.Column(db.Float, nullable = False)
+    time_of_ticket_booked = db.Column(db.DateTime)
 
-db.create_all()

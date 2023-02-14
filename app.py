@@ -4,9 +4,6 @@ from sqlalchemy import delete
 from datetime import datetime
 
 from flask_login import UserMixin, login_user, LoginManager, login_required, logout_user, current_user
-# from flask_wtf import FlaskForm
-# from wtforms import StringField, PasswordField, SubmitField
-# from wtforms.validators import InputRequired, Length, ValidationError
 from flask_bcrypt import Bcrypt
 
 
@@ -216,6 +213,14 @@ def filter_by_tag(tag):
 @login_required
 def book_ticket():
     return ("hello")
+
+@app.route("/add_rating/<int:id>",methods=["POST"])
+@login_required
+def add_rating(id):
+    show_venu_id = id
+    show_venu = Show_venu.query.filter_by(show_venu_id=show_venu_id).first()
+    show_id = show_venu["show_id"]
+    rating = request.form[""]
 
 @app.route("/logout",methods=["GET","POST"])
 @login_required

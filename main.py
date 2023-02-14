@@ -1,12 +1,11 @@
 import os
 from flask import Flask
-# from flask_restful import Resource, Api
-from application import config
+# from application.config import conf
 from application.config import LocalDevelopmentConfig
 from application.database import db
 
 app = None
-api = None
+
 
 
 
@@ -18,20 +17,15 @@ def create_app():
       print("Staring Local Development")
       app.config.from_object(LocalDevelopmentConfig)
     db.init_app(app)
-    # api = Api(app)
     app.app_context().push()  
-    return app  #, api
+    return app 
 
 app = create_app()
 app.secret_key="123456789"
-# app, api= create_app()
 
 # Import all the controllers so they are loaded
 from application.controllers import *
-
-# Add all restful controllers
-# from application.api import UserAPI
-# api.add_resource(UserAPI, "/api/user", "/api/user/<string:username>")
+from application.admin_controllers import *
 
 if __name__ == '__main__':
   # Run the Flask app

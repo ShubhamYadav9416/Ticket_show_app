@@ -36,25 +36,30 @@
                 </div>
                 <div class="about_movie">
                     <p class="past_rating">{{show["show_rating"]}}</p>
-                    <p class="duration">2 hr 30min</p>
-                    <p class="language">Hindi</p>
+                    <p class="duration">{{show["show_duration"][0:2] + " hr  " + show["show_duration"][3:5] + " min"}}</p>
+                    <p class="language">{{show["show_lang"].upper()}}</p>
                 </div>
             </div>
         </div>
         <div class="movie_discription">
             <h3>About the Show</h3>
-            <p class="discription"> {{show["show_discription"]}}</p>
+            <p class="discription"> {{show["show_discription"].capitalize()}}</p>
         </div>
         <hr>
         <div class="footer">
-            <form method="POST" action="{{url_for("book_ticket")}}">
-                <select class="select" name="show_name" required="True" class="select_venu">
-                    <option>Select Venu</option>
-                    <option value="PVR">PVR Delhi NCR</option>
-                    <option value="INOX">INOX Delhi NCR</option>
-                </select>
-                <input type="number" min="1" max="9" class="no_of_ticket">
-                <button type="submit" name="/Go" class="book_button">Book Ticket</button>
+            {% if no_show == False %}
+                <form method="POST" action="{{url_for("book_ticket")}}">
+                    <select class="select" name="show_name" required="True" class="select_venu">
+                        <option>Select Venu</option>
+                        {% for venu_with_place in venu_with_places %}
+                            <option value="{{venu_with_place}}">{{venu_with_place}}</option>
+                        {% endfor %}
+                    </select>
+                    <input type="number" min="1" max="9" class="no_of_ticket">
+                    <button type="submit" name="/Go" class="book_button">Book Ticket</button>
+            {% elif no_show == True %}
+                   <p class="comming_soon">Coming Soon</p>
+            {% endif %}
             </form>
         </div>
     </body>
