@@ -20,12 +20,21 @@ class Show_venu(db.Model):
         self.show_timing = show_timing
         self.show_added_timing = show_added_timing
 
+class Show_rating(db.Model):
+    __tablename__='show_rating'
+    show_id = db.Column(db.Integer,primary_key = True)
+    rating = db.Column(db.Float, nullable=True)
+    no_of_rating = db.Column(db.Integer)
+
+    def __init__(self,show_id,rating , no_of_rating):
+        self.show_id = show_id
+        self.rating =rating
+        self.no_of_rating = no_of_rating
+
 class Show(db.Model):
     __tablename__ ='show'
     show_id = db.Column(db.Integer, autoincrement = True, primary_key = True)
     show_name = db.Column(db.String(25), nullable= False)
-    show_rating = db.Column(db.Float, nullable=True)
-    no_of_rating = db.Column(db.Integer)
     show_tag = db.Column(db.String(10), nullable=False)
     show_lang = db.Column(db.String(10),nullable = False)
     show_duration = db.Column(db.String(10),nullable=False)
@@ -38,7 +47,6 @@ class Show(db.Model):
     
     def __init__(self,show_name,show_tag,show_discription,show_lang,show_duration,show_image_path):
         self.show_name= show_name
-        # self.show_rating= show_rating
         self.show_tag = show_tag
         self.show_discription = show_discription
         self.show_lang = show_lang
@@ -82,10 +90,28 @@ class User(db.Model, UserMixin):
 
 class Ticket_booked(db.Model):
     __tablename__ = 'ticket_booked'
-    booking_id = db.Column(db.Integer, primary_key = True)
+    booking_id = db.Column(db.Integer,autoincrement=True)
     user_id = db.Column(db.Integer, db.ForeignKey("user.id"), primary_key= True,nullable = False)
     show_venu_id = db.Column(db.Integer, db.ForeignKey("show_venu.show_venu_id"), primary_key= True, nullable= False)
     number_of_ticket_booked = db.Column(db.Integer, nullable = False)
-    cost_of_booked_tickets = db.Column(db.Float, nullable = False)
+    cost_at_the_time_ticket_booking = db.Column(db.Float, nullable = False)
     time_of_ticket_booked = db.Column(db.DateTime)
 
+    def __init__(self,user_id,show_venu_id,number_of_ticket_booked,cost_at_the_time_of_ticket_booking,time_of_ticket_booked):
+        self.user_id = user_id
+        self.show_venu_id = show_venu_id
+        self.number_of_ticket_booked = number_of_ticket_booked
+        self.cost_at_the_time_ticket_booking = cost_at_the_time_of_ticket_booking
+        self.time_of_ticket_booked = time_of_ticket_booked
+
+
+class Dynamic(db.Model):
+    __tablename__ = 'dynamic'
+    update_id = db.Column(db.Integer, db.ForeignKey("show_venu.show_venu_id"),primary_key = True, nullable = False)
+    seat_left = db.Column(db.Integer)
+    current_price = db.Column(db.Float)
+
+    def __init__(self,update_id,seat_left,current_price):
+        self.update_id=update_id
+        self.seat_left = seat_left
+        self.current_price = current_price

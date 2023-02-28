@@ -1,3 +1,6 @@
+body{
+    zoom:175%;
+}
 .side_bar{
     float: left;
     width: 200px;

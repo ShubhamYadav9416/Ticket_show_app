@@ -29,13 +29,13 @@
                 <img class="main_img" src="../{{show["show_image_path"]}}">
                 <p class="show_name">{{show["show_name"]}}</p>
                 <div class="rating">
-                    <form method="POST">
-                        <input type="number" min="1" max="5" rating" placeholder="rate movie from 1 to 5" class="rating_box"> <br>
+                    <form method="POST" action="{{url_for("add_rating", id=show["show_id"])}}">
+                        <input type="number" min="1" max="5" rating" name="rating" placeholder="rate movie from 1 to 5" class="rating_box"> <br>
                         <input type="submit" name="/Go" class="rating_submit">
                     </form>
                 </div>
                 <div class="about_movie">
-                    <p class="past_rating">{{show["show_rating"]}}</p>
+                    <p class="past_rating"><i class="bi bi-star-fill" style="color: rgb(226, 107, 107);"></i>{{rate_template}} </p>
                     <p class="duration">{{show["show_duration"][0:2] + " hr  " + show["show_duration"][3:5] + " min"}}</p>
                     <p class="language">{{show["show_lang"].upper()}}</p>
                 </div>
@@ -44,23 +44,58 @@
         <div class="movie_discription">
             <h3>About the Show</h3>
             <p class="discription"> {{show["show_discription"].capitalize()}}</p>
+            <span id="total_cost"></span>
         </div>
         <hr>
         <div class="footer">
-            {% if no_show == False %}
+            <!-- {% if no_show == False %} -->
                 <form method="POST" action="{{url_for("book_ticket")}}">
-                    <select class="select" name="show_name" required="True" class="select_venu">
+                    <select class="select" required="True" name="show_venu_id">
                         <option>Select Venu</option>
-                        {% for venu_with_place in venu_with_places %}
-                            <option value="{{venu_with_place}}">{{venu_with_place}}</option>
+                        {% for i in range(total_venu_of_show) %}
+                            <option value="{{i}}" <-- id="{{i}}" --> >{{venu_with_places[i]}}</option>
                         {% endfor %}
                     </select>
-                    <input type="number" min="1" max="9" class="no_of_ticket">
+                    <span id="total_cost"></span>
+                    <input type="number" min="1" max="9" name="no_of_ticket" id="no_of_ticket" class="no_of_ticket">
                     <button type="submit" name="/Go" class="book_button">Book Ticket</button>
-            {% elif no_show == True %}
-                   <p class="comming_soon">Coming Soon</p>
-            {% endif %}
-            </form>
+                </form>
+            <!-- {% elif no_show == True %} -->
+                   <!-- <p class="comming_soon">Coming Soon</p> -->
+            <!-- {% endif %} -->
+            <script>
+                const PriceDict = '{{show_venu_id_with_current_price}}'
+
+                const venueSelect = document.getElementById('venue_select');
+                const noOfTicketInput = document.getElementById('no_of_ticket');
+                const totalCostOutput = document.getElementById('total_cost');
+          
+                venueSelect.addEventListener('change', (event) => {
+                    const venueId = event.target.value;
+                    const currentPrice = PriceDict[venueId];
+                  
+                    const noOfTickets = noOfTicketInput.value;
+                    if (!isNaN(noOfTickets) && noOfTickets > 0 && currentPrice) {
+                        const totalCost = noOfTickets * currentPrice;
+                        totalCostOutput.textContent = `Total Cost: &#x20b9; ${totalCost}`;
+                    } else {
+                        totalCostOutput.textContent = "";
+                    }
+                });
+                
+                noOfTicketInput.addEventListener('input', (event) => {
+                    const noOfTickets = event.target.value;
+                    const venueId = venueSelect.value;
+                    const currentPrice = PriceDict[venueId];
+                  
+                    if (!isNaN(noOfTickets) && noOfTickets > 0 && PriceDict) {
+                        const totalCost = noOfTickets * PriceDict;
+                        totalCostOutput.textContent = `Total Cost: &#x20b9; ${totalCost}`;
+                    } else {
+                        totalCostOutput.textContent = "";
+                    }
+                });
+            </script>
         </div>
     </body>
 </html>

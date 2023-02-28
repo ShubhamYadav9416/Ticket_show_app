@@ -14,7 +14,7 @@
         <header>
             <div class="header_content">
                 <div class="left_align">
-                    <img class="logo" src="/static/image/logo.png">
+                    <a href="{{url_for("home")}}"><img class="logo" src="/static/image/logo.png"></a>
                     <a href="#"><input class="search" placeholder=" &#xf002  Search for Movies,Events.. " style="font-family: FontAwesome;"></a>
                 </div>
                 <div class="right_align">
@@ -25,20 +25,24 @@
         </header>
         <main>
             <div class="sidebar">
-                <dl>
-                    {% if filter_by_location == "True" %}
-                        <dt>Filter by Location</dt>
-                        {% for show_place_location in shows_place_locations %}
-                            <a href="{{url_for("filter_by_location",place= show_place_location[1])}}" class="filter_by_location"><dd>-{{show_place_location[1]}}</dd></a>
-                        {% endfor %}
-                    {% endif %}
-                    {% if filter_by_tag == "True" %}
-                        <dt>Filter by Genere</dt>
-                        {% for show_place_tag in shows_place_tags %}
-                            <a href="{{url_for("filter_by_tag",tag= show_place_tag[1])}}" class="filter_by_location"><dd>-{{show_place_tag[1]}}</dd></a>
-                        {% endfor %}
-                    {% endif %}
-                </dl>
+                {% if filter_result == True %}
+                <a href="{{url_for("home")}}"><dl>clear filter</dl></a>
+                {% elif filter_result == False %} 
+                    <dl>
+                        {% if filter_by_location == "True" %}
+                            <dt>Filter by Location</dt>
+                            {% for show_location in shows_locations %}
+                                <a href="{{url_for("filter_by_location",place= show_location)}}" class="filter_by_location"><dd>-{{show_location}}</dd></a>
+                            {% endfor %}
+                        {% endif %}
+                        {% if filter_by_tag == "True" %}
+                            <dt>Filter by Genere</dt>
+                            {% for show_tag in shows_tags %}
+                                <a href="{{url_for("filter_by_tag",tag= show_tag)}}" class="filter_by_location"><dd>-{{show_tag}}</dd></a>
+                            {% endfor %}
+                        {% endif %}
+                    </dl>
+                {% endif %}
             </div>
             <div class="main">
                 <h5>{{heading1}}</h5>
@@ -46,7 +50,11 @@
                     <div class="poster_link_activate">
                         <a href="{{url_for("ticket_booking",id=show["show_id"])}}" class="movie_page_link"> 
                            <div class="main_poster">
-                                <img src="{{show["show_image_path"]}}" class="poster">
+                                {% if filter_result  == True %}
+                                    <img src="{{"/" + show["show_image_path"]}}" class="poster">
+                                {% elif filter_result == False %}
+                                    <img src="{{show["show_image_path"]}}" class="poster">
+                                {% endif %}
                                 <p class="rating">
                                 <i class="bi bi-star-fill" style="color: rgb(226, 107, 107);"></i>
                                 {{show["show_rating"]}}
