@@ -90,9 +90,9 @@ class User(db.Model, UserMixin):
 
 class Ticket_booked(db.Model):
     __tablename__ = 'ticket_booked'
-    booking_id = db.Column(db.Integer,autoincrement=True)
-    user_id = db.Column(db.Integer, db.ForeignKey("user.id"), primary_key= True,nullable = False)
-    show_venu_id = db.Column(db.Integer, db.ForeignKey("show_venu.show_venu_id"), primary_key= True, nullable= False)
+    booking_id = db.Column(db.Integer,autoincrement=True,primary_key= True)
+    user_id = db.Column(db.Integer, db.ForeignKey("user.id") ,nullable = False)
+    show_venu_id = db.Column(db.Integer, db.ForeignKey("show_venu.show_venu_id") , nullable= False)
     number_of_ticket_booked = db.Column(db.Integer, nullable = False)
     cost_at_the_time_ticket_booking = db.Column(db.Float, nullable = False)
     time_of_ticket_booked = db.Column(db.DateTime)

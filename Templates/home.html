@@ -18,7 +18,7 @@
                     <a href="#"><input class="search" placeholder=" &#xf002  Search for Movies,Events.. " style="font-family: FontAwesome;"></a>
                 </div>
                 <div class="right_align">
-                    <p class="user" ><a href="#"><i class="bi bi-person-circle">{{user}}</i></a>
+                    <p class="user" ><a href="{{url_for("profile")}}"><i class="bi bi-person-circle">{{user}}</i></a>
                     <a href="{{url_for("logout")}}"><button>Logout</button></a></p>
                 </div>
             </div>
@@ -57,7 +57,7 @@
                                 {% endif %}
                                 <p class="rating">
                                 <i class="bi bi-star-fill" style="color: rgb(226, 107, 107);"></i>
-                                {{show["show_rating"]}}
+                                {{show_rating_templates[show["show_id"]]}}
                                 </p>
                             </div>
                             <p class="movie_name">{{show["show_name"]}}</p>
