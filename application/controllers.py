@@ -219,6 +219,9 @@ def ticket_booking(id):
         db.session.commit()
         show_venu_id_with_current_price[i] = update_price
 
+    # Stop taking booking when time of show pass
+    show_start_time = Show_venu
+
     # stop taking more booking in case of house full and ristricting booking more ticket than available
     seat_restriction={}
     for i in range(total_venu_of_show):
@@ -231,11 +234,13 @@ def ticket_booking(id):
         dict["no_of_seats_left"] = dynamic.seat_left
         seat_restriction[i] = dict
 
+
+
     return render_template("show_page.html",show_id = id,show = show,user=user,check_availablity=check_availablity,venu_with_places=venu_with_places,no_show=no_show,rate_template=rate_template,show_venu_id_with_current_price=show_venu_id_with_current_price, total_venu_of_show = total_venu_of_show,seat_restriction=seat_restriction)
 
 @app.route("/check_availablity/<int:id>",methods=["POST"])
 def check_availablity(id):
-    show_venu_id = int(request.form["show_venu_id"]) +1
+    show_venu_id = int(request.form["show_venu_id"])
     take_booking =True
 
     show=Show.query.filter_by(show_id = id).first()

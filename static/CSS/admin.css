@@ -1,5 +1,6 @@
 body{
     zoom:175%;
+    background-color: rgb(212, 212, 219);
 }
 .side_bar{
     float: left;
@@ -50,7 +51,7 @@ button{
     padding: 20px;
     width: 800px;
     align-items: center;
-    background-color: white;
+    /* background-color: white; */
 }
 
 input{
@@ -94,6 +95,9 @@ td{
 tr:nth-child(even){
     background-color: rgb(131, 202, 237);
 }
+tr:nth-child(odd){
+    background-color: whitesmoke;
+}
 h1{
     font-size: large;
 }
@@ -106,4 +110,103 @@ h1{
 .date_input{
     width: 385px;
     align-content: center;
+}
+
+
+.past_shows table {
+	border: 1px solid black; 
+	border-collapse: collapse; 
+	text-align: center;	
+    border-radius: .5em;
+    margin-top: 10px;
+}
+
+.past_shows th{
+    background-color: rgb(228, 87, 21);
+    color: white;
+}
+.past_shows td, th {
+    padding-left: 25px;
+    margin-right: 5px;
+	/* border: 1px solid black; */
+}
+
+.past_shows td{
+    font-size: 15px;
+}
+
+.past_shows tr:nth-child(even){
+    background-color: rgb(245, 181, 143);
+}
+
+.dashboard{
+    background-color: rgb(212, 212, 219);
+    margin-left: 200px;
+}
+.dashboard_heading{
+    font-size: 30px;
+    margin-left: 18px;
+}
+.dashboard_heading i{
+    font-size: 18px;
+    opacity: 80%;
+    margin-left: 5px;
+}
+.container{
+    padding-right: 50px;
+}
+.col{
+    margin: 10px;
+    background-color: white;
+}
+
+.dashboard_symbol{
+    background-color: rgb(67, 238, 118);
+    color: white;
+    font-size: 30px;
+    border-radius: 3em;
+    height: 50px;
+    width: 50px;
+    text-align: center;
+    margin-top: 9px;
+}
+.dashboard_highlight_result{
+    color: green;
+    font-weight:500;
+    font-size: 30px;
+    margin-top: 15px;
+}
+.dashboard_highlight_heading{
+    font-size: small;
+    margin-top: -23px;
+    margin-bottom: 3pxpx;
+}
+.summary{
+    background-color: white;
+    margin-left: 22px;
+    margin-right: 47px;
+}
+.summary p{
+    margin-left: 5px;
+}
+.container
+.col-4{
+    padding: 1px;
+}
+.top_three{
+    background-color: white;
+    padding: 5px;
+    width: max-content;
+}
+.top_three tr th{
+    background-color: white;
+    color: black;
+}
+.top_three tr td{
+    background-color: white;
+    color: #111;
+}
+
+.logout_button{
+    margin-top: 300px;
 }

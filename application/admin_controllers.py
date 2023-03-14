@@ -27,7 +27,8 @@ def admin_logout():
 @app.route("/admin")
 def admin():
     if ('email' in session):
-        return render_template('admin.html')
+        dashboard=True
+        return render_template('admin.html',dashboard=dashboard)
     else:
         return ("You are not allowed to access admin page")
 
@@ -111,8 +112,8 @@ def show():
         shows = Show.query.all()
         heading = "All Show"
         main_contents = shows
-        heads = ["No.", "Show Name", "Rating", "Tags","Language","Duration", "Discription", "Poster", "Action"]
-        box_contents = ["show_id" , "show_name" , "show_rating" , "show_tag","show_lang", "show_duration", "show_discription"]
+        heads = ["No.", "Show Name", "Tags","Language","Duration", "Discription", "Poster", "Action"]
+        box_contents = ["show_id" , "show_name" , "show_tag","show_lang", "show_duration", "show_discription"]
         additional1 = ["show_image_path"]
         url1 = "edit_show" 
         url2 = "delete_show"
@@ -166,9 +167,9 @@ def update_show(id):
         if request.method=="POST":
             content=Show.query.filter_by(show_id=id).first()
             content.show_name = request.form['show_name']
-            content.show_tag1 = request.form['show_tag1']
-            content.show_tag2 = request.form['show_tag2']
-            content.show_tag3 = request.form['show_tag3']
+            # content.show_tag = request.form['show_tag']
+            content.show_discription = request.form['show_discription']
+            content.show_duration = request.form['show_duration']
             # f=request.files['show_image_name']
             # f.save('static/image/poster'+f.filename)
             # content.show_image_path = 'static/image/poster'+f.filename
@@ -192,13 +193,23 @@ def delete_show(id):
 def show_venu():
     if ('email' in session):
         show_venus = Show_venu.query.join(Show,  Venu).filter(Show_venu.show_id == Show.show_id).filter(Show_venu.venu_id == Venu.venu_id).add_columns(Show_venu.show_venu_id,Venu.venu_name, Show.show_name, Show_venu.show_price, Show_venu.show_timing ,Show_venu.show_added_timing).all()
-        heading = "All Show"
-        main_contents = show_venus
-        heads = ["Show _ Venu Id", "Show Name", "Venu Name", "Price Of Ticket", "Show Timing", "Show Added Timing"]
+        heading = "Shows with Booking Online"
+        show_venu_of_running_shows=[]
+        show_venu_of_past_shows = []
+        for  show_venu in show_venus:
+            show_start_time = datetime.strptime(str(show_venu["show_timing"]), '%Y-%m-%d %H:%M:%S')  # Convert the show start time string to a datetime object
+            if (show_start_time < datetime.now()):
+                show_venu_of_past_shows.append(show_venu)
+            else:
+                show_venu_of_running_shows.append(show_venu)
+        main_contents = show_venu_of_running_shows
+        past_show = True
+        main_contents_past_shows = show_venu_of_past_shows
+        heads = ["Show Venu Id", "Show Name", "Venu Name", "Price Of Ticket", "Show Timing", "Show Added Timing"]
         box_contents = ["show_venu_id" , "show_name" , "venu_name" , "show_price", "show_timing", "show_added_timing"]
         button = "Book Show Venu"
         button_url = "book_show_venu"
-        return render_template('admin.html' ,display_table = "True", take_input = "False", edit_delete = "False" ,input_button="True", heading=heading, main_contents = main_contents, heads = heads, box_contents = box_contents, button_name = button, button_url = button_url)
+        return render_template('admin.html' ,display_table = "True", take_input = "False", edit_delete = "False" ,input_button="True", heading=heading, main_contents = main_contents,past_show = past_show ,main_contents_past_shows=main_contents_past_shows, heads = heads, box_contents = box_contents, button_name = button, button_url = button_url)
     else:
         return ("You are not allowed to access admin page")
 
