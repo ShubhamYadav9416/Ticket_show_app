@@ -28,7 +28,85 @@ def admin_logout():
 def admin():
     if ('email' in session):
         dashboard=True
-        return render_template('admin.html',dashboard=dashboard)
+
+        # find total sale and total  ticket booked.
+        tickets = Ticket_booked.query.all()
+        total_ticket_booked = 0
+        total_sale = 0
+        for ticket in tickets:
+            total_ticket_booked += ticket.number_of_ticket_booked 
+            total_sale += ticket.cost_at_the_time_ticket_booking * ticket.number_of_ticket_booked 
+        # find top rating of any show and top 3 rated show
+        shows_ratings = Show_rating.query.select_from(Show).filter(Show_rating.show_id == Show.show_id).add_columns(Show.show_name,Show_rating.show_id,Show_rating.rating,Show_rating.no_of_rating).all()
+        rating_with_show_id = {}
+        for show_rating in shows_ratings:
+            rating_with_show_id[show_rating.show_id] = show_rating.rating / show_rating.no_of_rating
+        sorted_dict_rating_with_show_id = sorted(rating_with_show_id.items(),key=lambda x: x[1]) #sorted with values
+        low_to_high_show_rating_show_id = [item[0] for item in sorted_dict_rating_with_show_id]
+        top_rated_show_rating = "{0:.1f}".format(sorted_dict_rating_with_show_id[-1][1])
+        top_3_rated_shows = []
+        rank=1
+        for i in range(-1,-4,-1):
+            for show_rating in shows_ratings:
+                if (low_to_high_show_rating_show_id[i] == show_rating.show_id):
+                    show = (rank,show_rating.show_name[0:8],show_rating.no_of_rating,"{0:.1f}".format(show_rating.rating / show_rating.no_of_rating))
+                    top_3_rated_shows.append(show)
+                    rank = rank +1
+
+        #find total user
+        users = User.query.all()
+        total_user =0
+        for user in users:
+            total_user = total_user+1
+
+        #find no of shows booking running in any venu
+        show_venus = Show_venu.query.all()
+        shows_booking_running = 0
+        for  show_venu in show_venus:
+            show_start_time = datetime.strptime(str(show_venu.show_timing), '%Y-%m-%d %H:%M:%S')  # Convert the show start time string to a datetime object
+            if (show_start_time > datetime.now()):
+                shows_booking_running = shows_booking_running +1
+        
+        # find top 3 revenue generating shows
+        shows = Show.query.all()
+        show_ids =[]
+        for show in shows:
+            show_ids.append(show.show_id)
+        show_ids_with_show_venu_ids = {}
+        for show_id in show_ids:
+            show_venu_ids = []
+            show_venus = Show_venu.query.filter_by(show_id = show_id).all()
+            for show_venu in show_venus:
+                show_venu_ids.append(show_venu.show_venu_id)
+            show_ids_with_show_venu_ids[show_id] = show_venu_ids
+        print(show_ids_with_show_venu_ids)
+        tickets=Ticket_booked.query.all()
+        show_id_with_collection={}
+        for show_id in show_ids:
+            show_id_with_collection[show_id] = 0
+        for show_id in show_ids:
+            collection_of_each_show_id = 0
+            for show_venu_id in show_ids_with_show_venu_ids[show_id]:
+                collection_of_each_show_venu_id = 0
+                for ticket in tickets:
+                    if ticket.show_venu_id == show_venu_id:
+                        collection_of_each_show_venu_id += ticket.number_of_ticket_booked * ticket.cost_at_the_time_ticket_booking
+                collection_of_each_show_id += collection_of_each_show_venu_id
+            show_id_with_collection[show_id] += collection_of_each_show_id
+        
+        sorted_dict_revenue_with_show_id = sorted(show_id_with_collection.items(),key=lambda x: x[1]) #sorted with values
+        low_to_high_show_revenue_show_id = [item[0] for item in sorted_dict_revenue_with_show_id]
+        
+        top_3_revenue_shows =[]
+        rank =1
+        for i in range(-1,-4,-1):
+            for show in shows:
+                if show.show_id == low_to_high_show_revenue_show_id[i]:
+                    show_name_with_revenue = (rank,(show.show_name)[0:8],show_id_with_collection[low_to_high_show_revenue_show_id[i]])
+                    top_3_revenue_shows.append(show_name_with_revenue)
+                    rank =rank +1
+        
+        return render_template('admin.html',dashboard=dashboard,total_sale=total_sale,total_ticket_booked=total_ticket_booked,top_rated_show_rating=top_rated_show_rating,top_3_rated_shows=top_3_rated_shows,total_user=total_user,shows_booking_running=shows_booking_running,top_3_revenue_shows=top_3_revenue_shows)
     else:
         return ("You are not allowed to access admin page")
 

@@ -185,23 +185,47 @@ h1{
     background-color: white;
     margin-left: 22px;
     margin-right: 47px;
+    height: 180px;
+    text-align: center;
+    padding: 15px;
+}
+.summary_fixed{
+    position: fixed;
 }
 .summary p{
     margin-left: 5px;
+    margin-top: 10px;
+    position: fixed;
 }
-.container
+.summary_logo{
+    background-color: rgb(67, 238, 118);
+    color: white;
+    font-size: 30px;
+    border-radius: 3em;
+    height: 50px;
+    width: 50px;
+    text-align: center;
+    margin-top: 9px;
+    margin-right: 15px;
+}
 .col-4{
     padding: 1px;
+    margin: 5px;
+}
+.dashboard_gap{
+    margin-right: 2px;
 }
 .top_three{
     background-color: white;
     padding: 5px;
     width: max-content;
+    margin-left: 15px;
 }
 .top_three tr th{
     background-color: white;
     color: black;
 }
+
 .top_three tr td{
     background-color: white;
     color: #111;
