@@ -13,3 +13,4 @@ flask_wtf
 wtforms
 flask_bcrypt
 email_validator
+matplotlib

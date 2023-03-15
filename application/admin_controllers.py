@@ -1,6 +1,7 @@
 from flask import request, render_template, url_for, redirect, flash, session
 from sqlalchemy import delete
 from datetime import datetime
+from matplotlib import pyplot as plt
 
 from flask_login import login_user, LoginManager, login_required, logout_user, current_user
 from flask_bcrypt import Bcrypt
@@ -68,6 +69,7 @@ def admin():
                 shows_booking_running = shows_booking_running +1
         
         # find top 3 revenue generating shows
+        # find show name with ticket booked for that show
         shows = Show.query.all()
         show_ids =[]
         for show in shows:
@@ -79,24 +81,30 @@ def admin():
             for show_venu in show_venus:
                 show_venu_ids.append(show_venu.show_venu_id)
             show_ids_with_show_venu_ids[show_id] = show_venu_ids
-        print(show_ids_with_show_venu_ids)
         tickets=Ticket_booked.query.all()
         show_id_with_collection={}
+        show_id_with_ticket_booked ={}
         for show_id in show_ids:
             show_id_with_collection[show_id] = 0
+            show_id_with_ticket_booked[show_id] = 0
         for show_id in show_ids:
+            ticket_booked_of_each_show_id =0
             collection_of_each_show_id = 0
             for show_venu_id in show_ids_with_show_venu_ids[show_id]:
+                ticket_booked_of_each_show_venu_id =0
                 collection_of_each_show_venu_id = 0
                 for ticket in tickets:
                     if ticket.show_venu_id == show_venu_id:
                         collection_of_each_show_venu_id += ticket.number_of_ticket_booked * ticket.cost_at_the_time_ticket_booking
+                        ticket_booked_of_each_show_venu_id += ticket.number_of_ticket_booked
                 collection_of_each_show_id += collection_of_each_show_venu_id
+                ticket_booked_of_each_show_id += ticket_booked_of_each_show_venu_id
             show_id_with_collection[show_id] += collection_of_each_show_id
+            show_id_with_ticket_booked[show_id] += ticket_booked_of_each_show_id
         
         sorted_dict_revenue_with_show_id = sorted(show_id_with_collection.items(),key=lambda x: x[1]) #sorted with values
         low_to_high_show_revenue_show_id = [item[0] for item in sorted_dict_revenue_with_show_id]
-        
+       
         top_3_revenue_shows =[]
         rank =1
         for i in range(-1,-4,-1):
@@ -106,6 +114,18 @@ def admin():
                     top_3_revenue_shows.append(show_name_with_revenue)
                     rank =rank +1
         
+        # plot bar chart save it in static
+        x=[]
+        y=[]
+        for show in shows:
+            x.append(show.show_name[0:8])
+            y.append(show_id_with_ticket_booked[show.show_id])
+        plt.bar(x,y)
+        plt.xlabel("Shows")
+        plt.ylabel("Ticket booked")
+        plt.title("Shows with ticket booked")
+        plt.savefig('./static/image/show_ticket_booked_bar.png')
+
         return render_template('admin.html',dashboard=dashboard,total_sale=total_sale,total_ticket_booked=total_ticket_booked,top_rated_show_rating=top_rated_show_rating,top_3_rated_shows=top_3_rated_shows,total_user=total_user,shows_booking_running=shows_booking_running,top_3_revenue_shows=top_3_revenue_shows)
     else:
         return ("You are not allowed to access admin page")

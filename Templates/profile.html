@@ -28,7 +28,8 @@
                 <p><b>Email:</b> <i>{{user_email}}</i></p>
                 <h3>My Bookings</h3>
                 {% if no_ticket_booked==False %}
-                {% for dict in ticket_details %}
+                {% if upcoming_shows_ticket_details != None %}
+                {% for dict in upcoming_shows_ticket_details %}
                     <div class="booking_details_box">
                         <img src="{{dict['image_path']}}">
                     
@@ -43,6 +44,29 @@
                         <p class="booking_id">Booking id={{dict['booking_id']}}</p>
                     </div>
                 {% endfor %}
+                {% endif %}
+                {% if past_show_ticket_details != None %}
+                <details>
+                    <summary>past bookings</summary>
+                    <p>
+                        {% for dict in past_show_ticket_details %}
+                        <div class="booking_details_box_of_past">
+                            <img src="{{dict['image_path']}}">
+                        
+                            <b class="show_name">{{dict['show']}}</b>
+                            <p class="address_and_venu">{{dict['venu']}}</p>
+                            <p class="date_time">{{dict['show_timming']}}</p>
+                            <p class="no_of_ticket"><b>Quantity : {{dict['quantity']}}</b></p>
+                            <p class="ticket_price">Ticket Price &emsp; &emsp; &emsp; &emsp; &emsp; &emsp; &emsp; &emsp; &emsp; &emsp;Rs {{dict['ticket_price']}}</p>
+                            <hr>
+                            <p class="amount_paid"><pre>                 Amount Paid                     <b class="total_rupee">Rs  {{dict['quantity'] * dict['ticket_price']}}</b></pre></p>
+                            <!-- <a href="{{url_for("remove_booked_ticket",booking_id=dict['booking_id'])}}"><p class="delete_button"><i class="bi bi-trash"></i></p></a> -->
+                            <p class="booking_id">Booking id={{dict['booking_id']}}</p>
+                        </div>
+                        {% endfor %}
+                    </p>
+                </details>
+                {% endif %}
                 {% elif no_ticket_booked==True %}
                     <p class="no_booking"><i>You don't seem to have any booking</i></p>
                 {% endif %}

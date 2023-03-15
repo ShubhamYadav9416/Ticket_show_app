@@ -43,6 +43,9 @@
         </div>
         <div class="movie_discription">
             <h3>About the Show</h3>
+            {% for venu_with_place in venu_with_places %}
+                        <p>{{venu_with_place[1]}}</p>
+            {% endfor %}
             <p class="discription"> {{show["show_discription"].capitalize()}}</p>
         </div>
         <hr>
@@ -54,8 +57,9 @@
 
                     <select class="select" required="True" name="show_venu_id">
                         <option>Select Venu</option>
-                        {% for i in venu_with_places %}
-                            <option value="{{i}}" id="{{i}}">{{venu_with_places[i]}}</option>
+                        {% for venu_with_place in venu_with_places %}
+                        <p>{{venu_with_place}}</p>
+                            <option value="{{venu_with_place[0]}}" id="{{venu_with_place[0]}}">{{venu_with_place[1]}}</option>
                         {% endfor %}
                     </select>
                     <button type="submit" name="/Go" class="book_button">Check Availablity</button>

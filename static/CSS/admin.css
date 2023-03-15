@@ -189,13 +189,11 @@ h1{
     text-align: center;
     padding: 15px;
 }
-.summary_fixed{
-    position: fixed;
-}
+
 .summary p{
     margin-left: 5px;
     margin-top: 10px;
-    position: fixed;
+    margin-left: -615px;
 }
 .summary_logo{
     background-color: rgb(67, 238, 118);
@@ -208,9 +206,8 @@ h1{
     margin-top: 9px;
     margin-right: 15px;
 }
-.col-4{
-    padding: 1px;
-    margin: 5px;
+#summaries_result{
+    margin-top: -110px;
 }
 .dashboard_gap{
     margin-right: 2px;
@@ -231,6 +228,34 @@ h1{
     color: #111;
 }
 
+.dashboard_graphs{
+    background-color: white;
+    margin-top: 10px;
+    margin-left: 22px;
+    margin-right: 47px;
+    margin-bottom: 20px;
+    height: 350px;
+    text-align: center;
+    padding: 15px;
+}
+.dashboard_graph_logo{
+    background-color: rgb(243, 133, 102);
+    color: white;
+    font-size: 30px;
+    border-radius: 3em;
+    height: 50px;
+    width: 50px;
+    text-align: center;
+    margin-top: 9px;
+    margin-right: 15px;
+}
+.dashboard_graphs p{
+    margin-left: -680px;
+    margin-top: 15px;
+}
+.dashboard_graphs img{
+    margin-top: -110px;
+}
 .logout_button{
     margin-top: 300px;
 }

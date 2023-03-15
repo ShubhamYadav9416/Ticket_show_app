@@ -1,5 +1,6 @@
 body,html,main,.main_content{
     height: 100%;
+    background-color: rgb(239, 240, 241);
 }
 body{
     background-color: rgb(239, 240, 241);
@@ -80,12 +81,26 @@ main{
     position: relative;
 }
 
-.booking_details_box .show_name{
+.booking_details_box_of_past{
+    background-color: rgb(233, 210, 147);
+    border-radius: 0.5em;
+    height: auto;
+    padding: 15px 15px 15px 15px;
+    margin-bottom: 30px;
+}
+
+.booking_details_box_of_past img{
+    width: 120px;
+    height: 140px;
+    opacity: 50%;
+    position: relative;
+}
+.show_name{
     position: absolute;
     margin-left: 20px;
 }
 
-.booking_details_box .address_and_venu{
+.address_and_venu{
     position: absolute;
     margin-top: -110px;
     margin-left: 142px;
@@ -93,7 +108,7 @@ main{
 }
 
 
-.booking_details_box .date_time{
+.date_time{
     position: absolute;
     margin-top: -85px;
     margin-left: 142px;
@@ -101,7 +116,7 @@ main{
     font-size: 14px
 }
 
-.booking_details_box .no_of_ticket{
+.no_of_ticket{
     position: absolute;
     margin-top: -55px;
     margin-left: 142px;
@@ -109,13 +124,20 @@ main{
     opacity: 80%;
 }
 
-.booking_details_box .ticket_price{
+.ticket_price{
     position: absolute;
     margin-top: -30px;
     margin-left: 142px;
 }
 
-hr{
+.booking_details_box_of_past hr{
+    border: none;
+    border-top: 1px dotted black;
+    width: 370px;
+    margin-left: 140px;
+    margin-top: 0;
+}
+.booking_details_box hr{
     border: none;
     border-top: 1px dotted black;
     width: 370px;
@@ -123,16 +145,16 @@ hr{
     margin-top: 0;
 }
 
-.booking_details_box .amount_paid{
+.amount_paid{
     margin-top: -5px;
     margin-bottom: -2px;
 }
 
-.booking_details_box .total_rupee{
+.total_rupee{
     font-size: large;
 }
 
-.booking_details_box .booking_id{
+.booking_id{
     font-size: 12px;
     margin-bottom: -10px;
     margin-top: -30px;
