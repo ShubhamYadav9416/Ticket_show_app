@@ -21,7 +21,7 @@
             <center>
             <div class="content">
                 <h2>Add Venu</h2>
-                <form method="POST" action="{{url_for("update_venu", id=content["venu_id"])}}">
+                <form method="POST" action="{{url_for("edit_venu", id=content["venu_id"])}}">
                     <input type="text" name="venu_name" placeholder="venu" required="True" value="{{content["venu_name"]}}" ><br>
                     <input type="number" name="capacity" placeholder="capacity" required="True" value="{{content["capacity"]}}"><br>
                     <input type="text" name="place" placeholder="place" required="True" value="{{content["place"]}}"><br>

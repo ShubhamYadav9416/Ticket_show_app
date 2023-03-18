@@ -15,7 +15,7 @@
             <div class="header_content">
                 <div class="left_align">
                     <a href="{{url_for("home")}}"><img class="logo" src="/static/image/logo.png"></a>
-                    <a href="#"><input class="search" placeholder=" &#xf002  Search for Movies,Events.. " style="font-family: FontAwesome;"></a>
+                    <a href="{{url_for("search")}}"><input class="search" placeholder=" &#xf002  Search for shows,venues,tags.. " style="font-family: FontAwesome;"></a>
                 </div>
                 <div class="right_align">
                     <p class="user" ><a href="{{url_for("profile")}}"><i class="bi bi-person-circle">{{user}}</i></a>
@@ -31,9 +31,7 @@
                     <dl>
                         <details>
                             <summary>
-                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-funnel-fill" viewBox="0 0 16 16">
-                                    <path d="M1.5 1.5A.5.5 0 0 1 2 1h12a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-.128.334L10 8.692V13.5a.5.5 0 0 1-.342.474l-3 1A.5.5 0 0 1 6 14.5V8.692L1.628 3.834A.5.5 0 0 1 1.5 3.5v-2z"/>
-                                </svg>
+                                Filters
                             </summary>
                         {% if filter_by_location == "True" %}
                             <dt>Filter by Location</dt>
@@ -55,7 +53,7 @@
                 <h5>{{heading1}}</h5>
                 {% for show in shows %}
                     <div class="poster_link_activate">
-                        <a href="{{url_for("ticket_booking",id=show["show_id"])}}" class="movie_page_link"> 
+                        <a href="{{url_for("show_page",id=show["show_id"])}}" class="movie_page_link"> 
                            <div class="main_poster">
                                 {% if filter_result  == True %}
                                     <img src="{{"/" + show["show_image_path"]}}" class="poster">

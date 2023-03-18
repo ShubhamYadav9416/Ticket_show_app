@@ -22,13 +22,13 @@
             <center>
                 <div class="content">
                     <h2>Edit show</h2>
-                    <form method="POST" action="{{url_for("update_show", id=content["show_id"])}}">
+                    <form method="POST" enctype="multipart/form-data" action="{{url_for("edit_show", id=content["show_id"])}}">
                         <input type="text" name="show_name" placeholder="show" required="True" value="{{content["show_name"]}}" ><br>
                         <input type="text" name="show_tag" placeholder="tag" required="True" value="{{content["show_tag"]}}"><br>
                         <input type="text" name="show_lang" placeholder="language" required="True" value="{{content["show_lang"]}}"><br>
                         <input type="text" name="show_duration" placeholder="duration" required="True" value="{{content["show_duration"]}}"><br>
                         <input type="text" name="show_discription" placeholder="discription" required="True" value="{{content["show_discription"]}}"><br>
-                        <!-- <input type="file" name="show_image_name" placeholder="upload poster" required="True"><br> -->
+                        <input type="file" name="file" placeholder="upload poster" ><br>
                         <input class="submit" type="submit" value = "Update"><br>
                     </form>
                 </div>

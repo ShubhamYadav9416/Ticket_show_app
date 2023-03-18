@@ -39,8 +39,8 @@
                     <button type="button" class="other_btn">LOGIN</button></a>
                 {% endif %}
                 <form class="form" method="POST">
-                    <input type="email" name="email" class="input" placeholder="Email">
-                    <input type="password" name="password" class="input" placeholder="Password"><br>
+                    <input type="email" name="email" class="input" placeholder="Email" required="True">
+                    <input type="password" name="password" class="input" placeholder="Password" required="True"><br>
                     {% if page=="login" %}
                         <p>
                             <a href="{{url_for("forget_password")}}">forget password?</a>
@@ -50,7 +50,7 @@
                     <button type="submit" class="submit" name="/Go">{{submit_name}}</button> 
                 </form>
                 {% if page=="login" %}
-                    <p>Not a member?<a href="{{url_for("register")}}">Register</a></p>
+                    <p>Not a user?<a href="{{url_for("register")}}">Register</a></p>
                 {% endif %}
             </center>
         </main>

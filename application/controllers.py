@@ -1,3 +1,7 @@
+# ------------------------------------------------------------
+# --------------file contains controllers for user-----------
+# ------------------------------------------------------------
+
 from flask import request, render_template, url_for, redirect, flash, session
 from sqlalchemy import delete
 from datetime import datetime
@@ -9,6 +13,7 @@ from flask import current_app as app
 from application.models import *
 from application.functions import *
 
+#-------initiallize login manager--------------
 bcrypt = Bcrypt(app)
 login_manager = LoginManager()
 login_manager.init_app(app)
@@ -17,7 +22,13 @@ login_manager.login_view = 'login'
 @login_manager.user_loader
 def load_user(id):
     return User.query.get(id)
- 
+
+# -------------------------------------------
+# ----------controller for  login------------
+# -------------------------------------------
+
+
+# controller for login user
 @app.route("/login", methods=["GET","POST"])
 def login():
     if request.method == "GET":
@@ -40,7 +51,7 @@ def login():
             return redirect("/login")
 
 
-
+# controller to register user
 @app.route("/register", methods=["GET","POST"])
 def register():
     if request.method == "GET":
@@ -63,14 +74,29 @@ def register():
             return redirect("/login")
 
 
-
+# controller to change password for user
 @app.route("/forget_password",methods=["GET","POST"])
 def forget_password():
     if request.method == "GET":
         page = "forget_password"
-        submit_name="Submit"
+        submit_name="Change Password"
         return render_template("login.html",page=page, submit_name=submit_name)
+    if request.method == "POST":
+        email = request.form["email"]
+        existing_user = User.query.filter_by(email=email).first()
+        if existing_user:
+            new_password = request.form["password"]
+            hashed_password = bcrypt.generate_password_hash(new_password)
+            existing_user.password = hashed_password
+            db.session.commit()
+            flash("Password changed,Login with new.")
+            return redirect('/login')
+        else:
+            flash("You are not registered. Register Now!")
+            return redirect('/register')
 
+
+# home page controller
 @app.route("/", methods=["GET","POST"])
 @login_required
 def home():
@@ -78,11 +104,18 @@ def home():
         email = current_user.email
         user = email.split("@")[0]
         shows = Show.query.all()
-        shows_not_unique_locations = Show_venu.query.join(Show,  Venu).filter(Show_venu.show_id == Show.show_id).filter(Show_venu.venu_id == Venu.venu_id).add_columns(Venu.place).all()
-        shows_not_unique_tags = Show_venu.query.join(Show,  Venu).filter(Show_venu.show_id == Show.show_id).filter(Show_venu.venu_id == Venu.venu_id).add_columns(Show.show_tag).all()
-        shows_locations = unique(shows_not_unique_locations)
-        shows_tags = unique(shows_not_unique_tags)
-
+        # make list for filter of loaction and genere tag
+        show_venus = Show_venu.query.join(Show,  Venu).filter(Show_venu.show_id == Show.show_id).filter(Show_venu.venu_id == Venu.venu_id).add_columns(Venu.place,Show.show_tag,Show_venu.show_timing).all()
+        shows_not_unique_tags=[]
+        shows_not_unique_locations=[]
+        for show_venu in show_venus:
+            shows_not_unique_tags.append(show_venu[2])
+            show_start_time = show_start_time = datetime.strptime(str(show_venu[3]), '%Y-%m-%d %H:%M:%S')  # Convert the show start time string to a datetime object
+            if (show_start_time > datetime.now()):
+                shows_not_unique_locations.append(show_venu[1])
+        shows_locations = set(shows_not_unique_locations)
+        shows_tags = set(shows_not_unique_tags)
+        # show rating show id as key and rating as value
         show_rating_templates ={}
         for show in shows:
             show_rating = Show_rating.query.filter_by(show_id= show.show_id).first()
@@ -94,8 +127,44 @@ def home():
         return render_template("home.html",filter_result = False,show_rating_templates=show_rating_templates, filter_by_location = "True",filter_by_tag="True",user=user,shows = shows,shows_tags=shows_tags ,shows_locations = shows_locations, heading1= "Recently Added")
 
 
-        
 
+# make search page and also push search results
+@app.route("/search", methods=["GET","POST"])
+def search():
+    if request.method == "GET":
+        email = current_user.email
+        user = email.split("@")[0]
+        return render_template("search.html",user=user)
+    if request.method == "POST":
+        email = current_user.email
+        user = email.split("@")[0]
+        q = request.form['q']
+        query = "%" + q + "%"
+        # pull search result for shows
+        show_name_match = []
+        show_results = Show.query.filter(Show.show_name.like(query)).all()
+        if show_results:
+            for result in show_results:
+                show_name_match.append((result.show_id,result.show_name,result.show_tag))
+        # pull search result for venues
+        venu_name_match = []
+        venu_results = Venu.query.filter(Venu.venu_name.like(query)).all()
+        if venu_results:
+            for result in venu_results:
+                venu_name_match.append((result.venu_id,result.venu_name,result.place))
+        # pull search result for show tags
+        show_tag_match =[]
+        show_result_tags = Show.query.filter(Show.show_tag.like(query)).all()
+        if show_result_tags:
+            for result in show_result_tags:
+                show_tag_match.append((result.show_id,result.show_name,result.show_tag))
+        return render_template("search.html",user=user,results=True,show_name_match=show_name_match,venu_name_match=venu_name_match,show_tag_match=show_tag_match)
+
+
+# controller for profile of user
+# important functionally to display booked tickets by user
+# and delete only those ticket whose shows is yet to start
+# --------Delete ticket booked ticket------------------ 
 @app.route('/profile')
 @login_required
 def profile():
@@ -134,19 +203,29 @@ def profile():
                 dict["quantity"] = ticket_booked_by_user.number_of_ticket_booked
                 dict["ticket_price"] = ticket_booked_by_user.cost_at_the_time_ticket_booking
                 past_show_ticket_details.append(dict)
-
     return render_template("profile.html",no_ticket_booked=no_ticket_booked, user_email=user_email,user_name=user_name,upcoming_shows_ticket_details=upcoming_shows_ticket_details,past_show_ticket_details=past_show_ticket_details)
 
 
+# filter by location controller
 @app.route("/filter_by_location/<place>")
 @login_required
 def filter_by_location(place):
     email = current_user.email
     user = email.split("@")[0]
-    show_ids = Show_venu.query.join(Show,  Venu).filter(Show_venu.show_id == Show.show_id).filter(Show_venu.venu_id == Venu.venu_id).filter(Venu.place == place).add_columns(Show_venu.show_id).all()
+    show_venus = Show_venu.query.join(Show,  Venu).filter(Show_venu.show_id == Show.show_id).filter(Show_venu.venu_id == Venu.venu_id).filter(Venu.place == place).add_columns(Show_venu.show_id,Show_venu.show_timing).all()
+    
+    #show ids with booking online
+    not_unique_show_ids =[]
+    for  show_venu in show_venus:
+            show_start_time = datetime.strptime(str(show_venu.show_timing), '%Y-%m-%d %H:%M:%S')  # Convert the show start time string to a datetime object
+            if (show_start_time > datetime.now()):
+                not_unique_show_ids.append(show_venu[1])
+    # get unique ids whose booking is online
+    unique_show_ids = set(not_unique_show_ids)
+
     shows=[]
-    for show_id in show_ids:
-        shows.append(Show.query.filter_by(show_id=show_id[1]).first())
+    for show_id in unique_show_ids:
+        shows.append(Show.query.filter_by(show_id=show_id).first())
     heading1= str("Shows in ") + place
 
     show_rating_templates ={}
@@ -159,15 +238,25 @@ def filter_by_location(place):
             show_rating_templates[show.show_id] = "None"
     return render_template("home.html",filter_result=True,show_rating_templates=show_rating_templates, user=user, filter_by_location = "False",filter_by_tag = "False", shows=shows,heading1=heading1)
 
+
+# filter by tag controller
 @app.route("/filter_by_tag/<tag>")
 @login_required
 def filter_by_tag(tag):
     email = current_user.email
     user = email.split("@")[0]
-    show_ids = Show_venu.query.join(Show,  Venu).filter(Show_venu.show_id == Show.show_id).filter(Show_venu.venu_id == Venu.venu_id).filter(Show.show_tag == tag).add_columns(Show_venu.show_id).all()
+    show_venus = Show_venu.query.join(Show,  Venu).filter(Show_venu.show_id == Show.show_id).filter(Show_venu.venu_id == Venu.venu_id).filter(Show.show_tag == tag).add_columns(Show_venu.show_id,Show_venu.show_timing).all()
+    
+    
+    #unique show ids
+    not_unique_show_ids =[]
+    for show_venu in show_venus:
+        not_unique_show_ids.append(show_venu[1])
+    unique_show_ids = set(not_unique_show_ids)
+
     shows=[]
-    for show_id in show_ids:
-        shows.append(Show.query.filter_by(show_id=show_id[1]).first())
+    for show_id in unique_show_ids:
+        shows.append(Show.query.filter_by(show_id=show_id).first())
     heading1 = tag + str(" Genere Shows")
 
     show_rating_templates ={}
@@ -180,22 +269,21 @@ def filter_by_tag(tag):
             show_rating_templates[show.show_id] = "None"
     return render_template("home.html",show_rating_templates=show_rating_templates, filter_result=True,user = user, filter_by_location = "False", filter_by_tag="False",shows=shows, heading1 = heading1)
 
-@app.route('/ticket_booking/<int:id>')
+
+
+@app.route('/show_page/<int:id>')
 @login_required
-def ticket_booking(id):
+def show_page(id):
     show=Show.query.filter_by(show_id = id).first()
     show_venus = Show_venu.query.join(Show, Venu).filter(Show_venu.show_id == id).filter(Show_venu.venu_id== Venu.venu_id).add_columns(Venu.venu_name,Venu.place,Show_venu.show_venu_id,Venu.capacity,Show_venu.show_price,Show_venu.show_timing,Show_venu.show_price).all()
     no_show=False
     check_availablity= True
-
-
-    #attaching venu name with venu placing and making dictionary
+    #attaching venu name with venu placing and making lsit with tuples
     venu_with_places=[]
     for show_venu in show_venus:
         show_start_time = datetime.strptime(str(show_venu[6]), '%Y-%m-%d %H:%M:%S')  # Convert the show start time string to a datetime object
         if (show_start_time >= datetime.now()):
             venu_with_places.append((show_venu[3], show_venu[1] + " (" + show_venu[2] + ")"))
-    print(venu_with_places)
     if len(venu_with_places) == 0:
         no_show =True
     
@@ -273,7 +361,7 @@ def check_availablity(id):
     for show_venu in show_venus:
         show_start_time = datetime.strptime(str(show_venu[6]), '%Y-%m-%d %H:%M:%S')  # Convert the show start time string to a datetime object
         if (show_start_time >= datetime.now()):
-            venu_with_places[show_venu[3]]= show_venu[i][1] + " (" + show_venu[i][2] + ")"
+            venu_with_places[show_venu[3]]= show_venu[1] + " (" + show_venu[2] + ")"
     
     if len(venu_with_places) == 0:
         no_show =True

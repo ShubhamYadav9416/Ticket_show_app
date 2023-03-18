@@ -43,10 +43,12 @@
         </div>
         <div class="movie_discription">
             <h3>About the Show</h3>
-            {% for venu_with_place in venu_with_places %}
-                        <p>{{venu_with_place[1]}}</p>
-            {% endfor %}
             <p class="discription"> {{show["show_discription"].capitalize()}}</p>
+        <p><b>Venues:</b>
+            {% for venu_with_place in venu_with_places %}
+                        {{venu_with_place[1]}},
+            {% endfor %}
+        </p>    
         </div>
         <hr>
         <div class="footer">

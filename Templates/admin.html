@@ -17,6 +17,7 @@
                 <a class="admin">Admin</a></a>
                 <br><br>
                 <div class="icons">
+                    <a href="{{url_for("admin")}}">Dashboard</a>
                     <a href="{{url_for("venu")}}">Venus</a>
                     <a href="{{url_for("show")}}">Shows</a>
                     <a href="{{url_for("show_venu")}}">Venu of Show and Price</a>
@@ -171,7 +172,7 @@
                                     <td>{{main_content[box_content]}}</td>
                                 {% endfor %}
                                 {% for additional in additional1 %}
-                                    <td><a href="{{main_content[additional]}}">view</a></td>
+                                    <td><a href="{{main_content[additional]}}" target="_blank">view</a></td>
                                 {% endfor %}
                                 {% if edit_delete == "True" %}
                                     <td><a href="{{url_for(url1 , id=main_content[id])}}"><i class="bi bi-pencil-square"></i></a>/<a href="{{url_for(url2 , id=main_content[id])}}"><i class="bi bi-trash"></i></a></td>
